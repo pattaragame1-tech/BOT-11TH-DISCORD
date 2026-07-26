@@ -17,7 +17,18 @@ const {
 const TOKEN = process.env.TOKEN;
 const ROLE_VERIFY_ID = '1529156325735534694'; 
 const CHANNEL_VERIFY_ID = '1529833944198156369'; 
-const CHANNEL_LOG_ID = '1529841593559945226'; 
+const CHANNEL_LOG_ID = '1529841593559945226'; // ล็อกยืนยันตัวตนเดิม
+
+// ==================== [ไอดีห้องสำหรับระบบบันทึก Log ทั้ง 8 ห้อง] ====================
+const LOG_MESSAGE_ID = '1530579415170416841';       // 📋 𝕧 บันทึกข้อความ (ใช้ห้องสำรองชั่วคราว หรือเปลี่ยนไอดีตามต้องการ)
+const LOG_VOICE_ID = '1530579415170416841';         // 📋 𝕧 บันทึกห้องเสียง
+const LOG_CHANNEL_UPDATE_ID = '1530579415170416841'; // 📋 𝕧 บันทึกช่องแชท
+const LOG_MEDIA_ID = '1530579415170416841';         // 📋 𝕧 บันทึกไฟล์สื่อ
+const LOG_BAN_ID = '1530579415170416841';           // 📋 𝕧 บันทึกละเมิด
+const LOG_SERVER_ID = '1530579415170416841';        // 📋 𝕧 บันทึกเซิร์ฟเวอร์
+// หมายเหตุ: พี่สามารถเอา ID ห้องจริงๆ จากดิสคอร์ดมาเปลี่ยนแทนตัวเลขด้านบนได้เลยครับ 
+// ตอนนี้ผมใส่ไอดีห้องต้อนรับคั่นไว้ก่อนเพื่อไม่ให้โค้ด Error ตอนรัน
+// =================================================================================
 
 const CHANNEL_TICKET_PANEL_ID = '1530263182726271047'; 
 const CATEGORY_TICKET_ID = '1529474261801242777'; 
@@ -29,40 +40,41 @@ const CHANNEL_GOODBYE_ID = '1530579438289551440';
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMembers, // สำคัญมากต้องเปิด Intent ในเว็บ Discord Dev ด้วย
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates, // เพิ่มเพื่อให้ระบบ Log เสียงทำงาน
+        GatewayIntentBits.GuildModeration    // เพิ่มเพื่อให้ระบบ Log แบน/ละเมิดทำงาน
     ]
 });
 
 const verificationCodes = new Map();
 
 client.once('ready', () => {
-    console.log(`Bot logged in as ${client.user.tag} (Full Systems Active)`);
+    console.log(`Bot logged in as ${client.user.tag} (Full Logs & Systems Active)`);
     client.user.setPresence({
-        activities: [{ name: 'ระบบต้อนรับ & ยืนยันตัวตน & ตั๋ว', type: 0 }],
+        activities: [{ name: 'ระบบต้อนรับ & ยืนยันตัวตน & ตั๋ว & บันทึก Log', type: 0 }],
         status: 'online',
     });
 });
 
+// ==================== ระบบต้อนรับ (Welcome - รูปแบบตามที่ขอ) ====================
 client.on('guildMemberAdd', async member => {
     try {
         const welcomeChannel = await member.guild.channels.fetch(CHANNEL_WELCOME_ID).catch(() => null);
         if (!welcomeChannel) return;
 
-        const memberCount = member.guild.memberCount;
-        const paddedCount = String(memberCount).padStart(3, '0');
         const file = new AttachmentBuilder('https://i.postimg.cc/nVDvyMVH/54bda352b17744efa1f6898040455423.gif');
 
         const welcomeEmbed = new EmbedBuilder()
             .setTitle('𝟷𝟷𝑇𝐻 𝐼𝑁𝐹𝐴𝑁𝑇𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐾𝐼𝑁𝐺\'𝑆 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์')
             .setDescription(
                 '╔═════════════╗\n\n' +
-                'ยินดีต้อนรับสู่ ``กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์``\n\n' +
-                `Name <@${member.id}>\n\n` +
-                `คุณเป็นคนที่ ${paddedCount}\n\n` +
+                'ยินดีต้อนรับสู่ ``กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์`` <:emoji_1:1529164325779144755> <:emoji_6:1530575127547482274> \n\n' +
+                `𝐍𝐚𝐦𝐞 : <@${member.id}>\n\n\n` +
                 'ยืนยันตัวตนที่ช่อง [ยืนยันตัวตน](https://discord.com/channels/1529134792665206948/1529833944198156369) <:emoji_1:1529164325779144755>\n\n' +
                 '```👑 "ผู้เป็นที่รัก สนิท คุ้นเคยของพระราชา" 👑```\n\n' +
+                '𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑 "𝟏𝟏𝐓𝐇 𝐈𝐍𝐅𝐴𝑁𝐓𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐊𝐈𝐍𝐆\'𝐒 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์ <:emoji_6:1530575127547482274> \n' +
                 '╚═════════════╝'
             )
             .setImage('attachment://54bda352b17744efa1f6898040455423.gif')
@@ -74,6 +86,7 @@ client.on('guildMemberAdd', async member => {
     }
 });
 
+// ==================== ระบบอำลา (Goodbye - รูปแบบตามที่ขอ) ====================
 client.on('guildMemberRemove', async member => {
     try {
         const goodbyeChannel = await member.guild.channels.fetch(CHANNEL_GOODBYE_ID).catch(() => null);
@@ -81,8 +94,13 @@ client.on('guildMemberRemove', async member => {
 
         const file = new AttachmentBuilder('https://i.postimg.cc/qRp99WyL/7c2c7f8d6bce126774a63e43d39fec55.gif');
         const goodbyeEmbed = new EmbedBuilder()
-            .setTitle('𝟷𝟷𝑇𝐻 𝐼𝑁𝐹𝐴𝑁𝑇𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐾𝐼𝑁𝐺\'𝑆 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷')
-            .setDescription(`**ลาก่อนคุณ <@${member.id}> \nไว้พบใหม่ในวันข้างหน้าที่แสนดี🫡 **`)
+            .setTitle('𝟷𝟷𝑇𝐻 𝐼𝑁𝐹𝐴𝑁𝑇𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐾𝐼𝑁𝐺\'𝑆 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์')
+            .setDescription(
+                '╔═════════════╗\n\n' +
+                `**ลาก่อนคุณ <@${member.id}> \nไว้พบใหม่ในวันข้างหน้าที่แสนดี 🫡 <:emoji_1:1529164325779144755> <:emoji_6:1530575127547482274> **\n\n` +
+                '𝐆𝐎𝐎𝐃𝐁𝐘𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑 "𝟏𝟏𝐓𝐇 𝐈𝐍𝐅𝐴𝑁𝑇𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐊I𝐍𝐺\'𝑆 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์ <:emoji_6:1530575127547482274> \n' +
+                '╚═════════════╝'
+            )
             .setImage('attachment://7c2c7f8d6bce126774a63e43d39fec55.gif')
             .setColor(0xFF0000);
 
@@ -92,6 +110,77 @@ client.on('guildMemberRemove', async member => {
     }
 });
 
+// ==================== ระบบบันทึก Log (ข้อความ, เสียง, สื่อ, ละเมิด) ====================
+client.on('messageUpdate', async (oldMessage, newMessage) => {
+    if (oldMessage.author?.bot || !oldMessage.content || !newMessage.content) return;
+    if (oldMessage.content === newMessage.content) return;
+
+    const logChan = await oldMessage.guild.channels.fetch(LOG_MESSAGE_ID).catch(() => null);
+    if (!logChan) return;
+
+    const embed = new EmbedBuilder()
+        .setTitle('✏️ บันทึกการแก้ไขข้อความ')
+        .addFields(
+            { name: 'ผู้ส่ง', value: `<@${oldMessage.author.id}>`, inline: false },
+            { name: 'ช่องแชท', value: `<#${oldMessage.channel.id}>`, inline: false },
+            { name: 'ข้อความเดิม', value: oldMessage.content, inline: false },
+            { name: 'ข้อความหลังแก้ไข', value: newMessage.content, inline: false }
+        )
+        .setColor(0xFFA500)
+        .setTimestamp();
+    await logChan.send({ embeds: [embed] }).catch(() => {});
+});
+
+client.on('messageDelete', async message => {
+    if (message.author?.bot) return;
+    if (message.attachments.size > 0) {
+        const logMediaChan = await message.guild.channels.fetch(LOG_MEDIA_ID).catch(() => null);
+        if (logMediaChan) {
+            const embed = new EmbedBuilder()
+                .setTitle('🖼️ บันทึกไฟล์สื่อถูกลบ')
+                .addFields(
+                    { name: 'ผู้ส่ง', value: message.author ? `<@${message.author.id}>` : 'ไม่ทราบผู้ส่ง', inline: false },
+                    { name: 'ช่องแชท', value: `<#${message.channel.id}>`, inline: false }
+                )
+                .setColor(0xFF0000)
+                .setTimestamp();
+            await logMediaChan.send({ embeds: [embed] }).catch(() => {});
+        }
+    }
+});
+
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    const logVoiceChan = await oldState.guild.channels.fetch(LOG_VOICE_ID).catch(() => null);
+    if (!logVoiceChan) return;
+
+    const member = newState.member;
+    if (!member) return;
+
+    if (!oldState.channelId && newState.channelId) {
+        const embed = new EmbedBuilder().setTitle('🔊 เข้าห้องเสียง').setDescription(`<@${member.id}> ได้เข้ามายังห้องเสียง <#${newState.channelId}>`).setColor(0x00FF00).setTimestamp();
+        await logVoiceChan.send({ embeds: [embed] }).catch(() => {});
+    } else if (oldState.channelId && !newState.channelId) {
+        const embed = new EmbedBuilder().setTitle('🔇 ออกจากห้องเสียง').setDescription(`<@${member.id}> ได้ออกจากห้องเสียง <#${oldState.channelId}>`).setColor(0xFF0000).setTimestamp();
+        await logVoiceChan.send({ embeds: [embed] }).catch(() => {});
+    } else if (oldState.channelId && newState.channelId && oldState.channelId !== newState.channelId) {
+        const embed = new EmbedBuilder().setTitle('🔄 ย้ายห้องเสียง').setDescription(`<@${member.id}> ย้ายจากห้อง <#${oldState.channelId}> ไปยัง <#${newState.channelId}>`).setColor(0x00FFFF).setTimestamp();
+        await logVoiceChan.send({ embeds: [embed] }).catch(() => {});
+    }
+});
+
+client.on('guildBanAdd', async ban => {
+    const logBanChan = await ban.guild.channels.fetch(LOG_BAN_ID).catch(() => null);
+    if (!logBanChan) return;
+
+    const embed = new EmbedBuilder()
+        .setTitle('🦇 บันทึกการลงโทษ (แบนสมาชิก)')
+        .setDescription(`ผู้ใช้ ${ban.user.tag} (ID: ${ban.user.id}) ถูกแบนออกจากเซิร์ฟเวอร์`)
+        .setColor(0xFF0000)
+        .setTimestamp();
+    await logBanChan.send({ embeds: [embed] }).catch(() => {});
+});
+
+// ==================== ระบบคำสั่ง Setup ====================
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
 
@@ -143,6 +232,7 @@ client.on('messageCreate', async message => {
     }
 });
 
+// ==================== ระบบปุ่มกด, โมเดล และเมนูตั๋ว ====================
 client.on('interactionCreate', async interaction => {
     try {
         if (interaction.isButton() && interaction.customId === 'btn_verify') {
@@ -289,7 +379,7 @@ process.on('uncaughtException', error => {
 
 client.login(TOKEN);
 
-// ระบบเว็บเซิร์ฟเวอร์จำลองสำหรับ Render
+// ระบบเว็บเซิร์ฟเวอร์จำลองสำหรับ Render รัน 24/7
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
