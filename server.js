@@ -14,7 +14,7 @@ const {
     AttachmentBuilder 
 } = require('discord.js');
 
-const TOKEN = 'MTUyOTgxNDY4OTg0NzE4NTUzOA.GYLU_I.sUCHW-7g5ADk-qEGrppp9qxtjCG2xwuMOocrHI';
+const TOKEN = process.env.TOKEN;
 const ROLE_VERIFY_ID = '1529156325735534694'; 
 const CHANNEL_VERIFY_ID = '1529833944198156369'; 
 const CHANNEL_LOG_ID = '1529841593559945226'; 
