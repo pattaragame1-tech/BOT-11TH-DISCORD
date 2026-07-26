@@ -19,14 +19,14 @@ const ROLE_VERIFY_ID = '1529156325735534694';
 const CHANNEL_VERIFY_ID = '1529833944198156369'; 
 const CHANNEL_LOG_ID = '1529841593559945226'; // ล็อกยืนยันตัวตนเดิม
 
-// ==================== [ไอดีห้องสำหรับระบบบันทึก Log (ที่ถูกต้องตามพี่ส่งมา)] ====================
+// ==================== [ไอดีห้องสำหรับระบบบันทึก Log ทั้ง 6 ห้อง] ====================
 const LOG_MESSAGE_ID = '1530866419229659187';       // 📋 บันทึกข้อความ (ลบ/แก้ไขข้อความ)
 const LOG_VOICE_ID = '1530866452968640623';         // 🔊 บันทึกห้องเสียง (เข้า/ออก/ย้ายห้อง)
 const LOG_CHANNEL_UPDATE_ID = '1530866481787703468'; // 📁 บันทึกช่องแชท (สร้าง/ลบ/แก้ไขห้อง)
 const LOG_MEDIA_ID = '1530866527350554704';         // 🖼️ บันทึกไฟล์สื่อ (ส่งรูปภาพ/วิดีโอ/ไฟล์)
 const LOG_BAN_ID = '1530866688084414554';           // 🛡️ บันทึกละเมิด (แบน/เตะสมาชิก)
-const LOG_SERVER_ID = '1530866715393654835';        // 🚀 บันทึกเซิร์ฟเวอร์ (คนบูสต์เซิร์ฟเวอร์, อัปเดตเซิร์ฟ)
-// ===========================================================================================
+const LOG_SERVER_ID = '1530866715393654835';        // 🚀 บันทึกเซิร์ฟเวอร์ (คนบูสต์เซิร์ฟเวอร์)
+// =================================================================================
 
 const CHANNEL_TICKET_PANEL_ID = '1530263182726271047'; 
 const CATEGORY_TICKET_ID = '1529474261801242777'; 
@@ -38,21 +38,21 @@ const CHANNEL_GOODBYE_ID = '1530579438289551440';
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,        // สำคัญมากต้องเปิด Intent ในเว็บ Discord Dev ด้วย
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,       // จำเป็นต้องอ่านเนื้อหาข้อความเพื่อทำ Log
-        GatewayIntentBits.GuildVoiceStates,     // ระบบ Log เสียง
-        GatewayIntentBits.GuildModeration,      // ระบบ Log การแบน/เตะ
-        GatewayIntentBits.GuildBans             // ระบบตรวจจับการแบน
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildBans
     ]
 });
 
 const verificationCodes = new Map();
 
 client.once('ready', () => {
-    console.log(`Bot logged in as ${client.user.tag} (Fixed All Logs & Correct Channels)`);
+    console.log(`Bot logged in as ${client.user.tag} (Fixed Syntax & All Logs Active)`);
     client.user.setPresence({
-        activities: [{ name: 'ระบบต้อนรับ & ยืนยันตัวตน & ตั๋ว & บันทึก Log แบบจัดเต็ม', type: 0 }],
+        activities: [{ name: 'ระบบต้อนรับ & ยืนยันตัวตน & ตั๋ว & บันทึก Log ครบถ้วน', type: 0 }],
         status: 'online',
     });
 });
@@ -97,7 +97,7 @@ client.on('guildMemberRemove', async member => {
             .setDescription(
                 '╔═════════════╗\n\n' +
                 `**ลาก่อนคุณ <@${member.id}> \nไว้พบใหม่ในวันข้างหน้าที่แสนดี 🫡 <:emoji_1:1529164325779144755> <:emoji_6:1530575127547482274> **\n\n` +
-                '𝐆𝐎𝐎𝐃𝐁𝐘𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑 "𝟏𝟏𝐓𝐇 𝐈𝐍𝐅𝐴𝑁𝐓𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐊𝐈𝐍𝐺\'𝐒 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์ <:emoji_6:1530575127547482274> \n' +
+                '𝐆𝐎𝐎𝐃𝐁𝐘𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑 "𝟏𝟏𝐓𝐇 𝐈𝐍𝐅𝐴𝑁𝐓𝑅𝑌 𝑅𝐸𝐺𝐼𝑀𝐸𝑁𝑇, 𝐊𝐈𝐍𝐺\'𝑆 𝑂𝑊𝑁 𝐵𝑂𝐷𝑌𝐺𝑈𝐴𝑅𝐷 | กรมทหารราบที่ ๑๑ มหาดเล็กราชวัลลภรักษาพระองค์ <:emoji_6:1530575127547482274> \n' +
                 '╚═════════════╝'
             )
             .setImage('attachment://7c2c7f8d6bce126774a63e43d39fec55.gif')
@@ -109,9 +109,9 @@ client.on('guildMemberRemove', async member => {
     }
 });
 
-// ==================== [ระบบบันทึก Log ทั้งหมด (แสดงผลชัดเจน)] ====================
+// ==================== [ระบบบันทึก Log ทั้ง 6 ห้อง] ====================
 
-// 1. บันทึกข้อความ (แก้ไข / ลบข้อความ) -> ID: 1530866419229659187
+// 1. บันทึกข้อความ -> ID: 1530866419229659187
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!oldMessage.guild || oldMessage.author?.bot) return;
     if (oldMessage.content === newMessage.content) return;
@@ -124,7 +124,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .addFields(
             { name: '👤 ผู้ส่ง', value: `<@${oldMessage.author.id}> (${oldMessage.author.tag})`, inline: false },
             { name: '📺 ช่องแชท', value: `<#${oldMessage.channel.id}>`, inline: false },
-            { name: '💬 ข้อความเดิม', value: oldMessage.content || '*(ไม่มีข้อความ/อาจเป็น Embed)*', inline: false },
+            { name: '💬 ข้อความเดิม', value: oldMessage.content || '*(ไม่มีข้อความ)*', inline: false },
             { name: '✨ ข้อความหลังแก้ไข', value: newMessage.content || '*(ไม่มีข้อความ)*', inline: false }
         )
         .setColor(0xFFA500)
@@ -150,7 +150,7 @@ client.on('messageDelete', async message => {
     await logChan.send({ embeds: [embed] }).catch(() => {});
 });
 
-// 2. บันทึกไฟล์สื่อ (ส่งรูปภาพ, วิดีโอ, ไฟล์ต่างๆ) -> ID: 1530866527350554704
+// 2. บันทึกไฟล์สื่อ -> ID: 1530866527350554704
 client.on('messageCreate', async message => {
     if (!message.guild || message.author.bot) return;
     if (message.attachments.size > 0) {
@@ -173,7 +173,7 @@ client.on('messageCreate', async message => {
     }
 });
 
-// 3. บันทึกห้องเสียง (เข้า, ออก, ย้ายห้อง) -> ID: 1530866452968640623
+// 3. บันทึกห้องเสียง -> ID: 1530866452968640623
 client.on('voiceStateUpdate', async (oldState, newState) => {
     const logVoiceChan = await oldState.guild.channels.fetch(LOG_VOICE_ID).catch(() => null);
     if (!logVoiceChan) return;
@@ -205,7 +205,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     }
 });
 
-// 4. บันทึกช่องแชท (สร้าง, ลบ, แก้ไขช่อง) -> ID: 1530866481787703468
+// 4. บันทึกช่องแชท -> ID: 1530866481787703468
 client.on('channelCreate', async channel => {
     if (!channel.guild) return;
     const logChanUpdate = await channel.guild.channels.fetch(LOG_CHANNEL_UPDATE_ID).catch(() => null);
@@ -232,7 +232,7 @@ client.on('channelDelete', async channel => {
     await logChanUpdate.send({ embeds: [embed] }).catch(() => {});
 });
 
-// 5. บันทึกละเมิด (การแบนสมาชิก) -> ID: 1530866688084414554
+// 5. บันทึกละเมิด -> ID: 1530866688084414554
 client.on('guildBanAdd', async ban => {
     const logBanChan = await ban.guild.channels.fetch(LOG_BAN_ID).catch(() => null);
     if (!logBanChan) return;
@@ -245,7 +245,7 @@ client.on('guildBanAdd', async ban => {
     await logBanChan.send({ embeds: [embed] }).catch(() => {});
 });
 
-// 6. บันทึกเซิร์ฟเวอร์ (รวมคน Boost เซิร์ฟเวอร์) -> ID: 1530866715393654835
+// 6. บันทึกเซิร์ฟเวอร์ / บูสต์ -> ID: 1530866715393654835
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
     const logServerChan = await newMember.guild.channels.fetch(LOG_SERVER_ID).catch(() => null);
     if (!logServerChan) return;
@@ -253,7 +253,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     const wasBoosting = oldMember.premiumSince;
     const isBoosting = newMember.premiumSince;
 
-    // ตรวจสอบกรณีเพิ่งบูสต์เซิร์ฟเวอร์
     if (!wasBoosting && isBoosting) {
         const embed = new EmbedBuilder()
             .setTitle('🚀 ขอบคุณสำหรับการบูสต์เซิร์ฟเวอร์!')
@@ -405,4 +404,67 @@ client.on('interactionCreate', async interaction => {
                 ],
             });
 
-            const
+            const ticketEmbed = new EmbedBuilder()
+                .setTitle(`<a:emoji_5:1530562940821049406> ${topicName}`)
+                .setDescription(
+                    `สวัสดี! นี่คือตั๋วสำหรับ${topicName}\n` +
+                    `กรุณากรอกข้อมูลให้ครบเพื่อให้แอดมินช่วยได้รวดเร็ว\n` +
+                    `\`\`\`text\n(1) ชื่อใน Roblox : ชื่อของคุณ\n(2) หัวข้อที่ต้องการติดต่อ : สรุปสั้นๆ\n(3) รายละเอียด : อธิบายปัญหาหรือคำถาม\n(4) หลักฐาน : แนบรูปภาพ (ถ้ามี)\`\`\`\n` +
+                    `📌 หากแอดมินไม่ตอบ กรุณารอภายใน 24 ชั่วโมง`
+                )
+                .setColor(0x00FF00);
+
+            const pingContent = `<@${interaction.user.id}> <@&${ROLE_ADMIN_TICKET_ID}>`;
+            const closeRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('btn_close_ticket')
+                    .setLabel('🔒 ปิดตั๋ว')
+                    .setStyle(ButtonStyle.Danger)
+            );
+
+            await ticketChannel.send({ content: pingContent, embeds: [ticketEmbed], components: [closeRow] });
+            await interaction.editReply({ content: `✅ เปิดห้องตั๋วให้คุณแล้วครับ: <#${ticketChannel.id}>` });
+        }
+
+        if (interaction.isButton() && interaction.customId === 'btn_close_ticket') {
+            const isAdmin = interaction.member.roles.cache.has(ROLE_ADMIN_TICKET_ID);
+
+            if (!isAdmin) {
+                return interaction.reply({ content: '❌ เฉพาะผู้ดูแลระบบเท่านั้นที่มีสิทธิ์กดปิดตั๋วนี้ครับ!', ephemeral: true });
+            }
+
+            await interaction.reply({ content: '🔒 กำลังปิดห้องตั๋วใน 5 วินาที...' });
+            setTimeout(async () => {
+                try {
+                    await interaction.channel.delete();
+                } catch (err) {
+                    console.error('ไม่สามารถลบห้องได้:', err);
+                }
+            }, 5000);
+        }
+    } catch (error) {
+        console.error('Interaction Error:', error);
+        if (interaction.isRepliable() && !interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: '❌ เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้ง', ephemeral: true }).catch(() => {});
+        } else if (interaction.deferred) {
+            await interaction.editReply({ content: '❌ เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้ง' }).catch(() => {});
+        }
+    }
+});
+
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', error => {
+    console.error('Uncaught exception:', error);
+});
+
+client.login(TOKEN);
+
+// ระบบเว็บเซิร์ฟเวอร์จำลองสำหรับ Render รัน 24/7
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.get('/', (req, res) => res.send('Bot is running 24/7!'));
+app.listen(PORT, () => console.log(`Web server is running on port ${PORT}`));
