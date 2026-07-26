@@ -210,7 +210,7 @@ client.on('messageCreate', async message => {
         if (message.channel.id === CHANNEL_TICKET_PANEL_ID) {
             const file = new AttachmentBuilder('https://i.postimg.cc/mD7hPyMm/mi-m-ch-x-399-20260725185819.jpg');
             const embedTicket = new EmbedBuilder()
-                .setTitle('<:emoji_1:1529164325779144755> ติดต่อราชสำนัก')
+                .setTitle('<:emoji_1:1529164325779144755> <a:emoji_7:1530591663758643200> ติดต่อราชสำนัก')
                 .setImage('attachment://mi-m-ch-x-399-20260725185819.jpg')
                 .setDescription('ข้อมูลของคุณจะถูกเก็บเป็นความลับ')
                 .setColor(0xFF0000);
